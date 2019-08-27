@@ -1,0 +1,26 @@
+{% include 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .logout-message{
+        background-color: #fff;
+    }
+    .logout-message{
+        text-align: center;
+        margin: 0 auto;
+        padding: 15px;
+    }
+    .logout{
+        margin-top: 200px;
+    }
+</style>
+    <div class="logout">
+        <div class="container">
+            <div class="logout-message">
+                <h1>You have been logged out successfully!</h1>
+                <hr>
+                <a href="/" class="btn btn-primary">Log In</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% include 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="clearance-title">University Clearance</h1>
+        </div>
+    </div>
+    <div class="login-form">
+        <div class="row">
+            <div class="col-sm-4">
+                <h1>Log In</h1>
+                <hr>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="alert alert-danger" id="login-failed">
+                        Invalid Username or Password! Please try again.
+                    </div>
+                    <div class="form-group">
+                        <label for="id_username">Username</label>
+                        <input type="text" class="form-control" id="id_username" placeholder="Username" autofocus="" required="">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_password">Password</label>
+                        <input type="password" class="form-control" id="id_password" placeholder="Password" required="">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="validateLogin()">
+                        <span></span>
+                        Submit
+                    </button>
+                </form>
+            </div>
+            <div class="col-sm-8">
+                <div class="login-content">
+                    <h1> <q>Makes work easier.</q> </h1>
+                    <p style="text-align: justify;">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, dignissimos? Temporibus obcaecati sed modi unde omnis? Ipsam provident ea quis facilis voluptatibus cupiditate non minus explicabo ipsa, sint tenetur aliquid.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+    <script>
+        function validateLogin(){
+            // LOADING BUTTON
+            let span = document.getElementsByTagName("span")[0];
+            let sp_attr = document.createAttribute("class");
+            sp_attr.value = "spinner-border spinner-border-sm";
+            span.setAttributeNode(sp_attr);
+
+            let csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
+            let username = document.getElementById('id_username').value;
+            let password = document.getElementById('id_password').value;
+
+            let json_info = {
+                username: username,
+                password: password
+            };
+
+            setTimeout(function(){
+                $.ajax({
+                    url: "api/accounts/login/",
+                    method: 'POST',
+                    type: 'application/json',
+                    data: json_info,
+                    headers: { "X-CSRFToken": csrf_token },
+                    error: (err_msg) =>{
+                        jQuery("#login-failed").show(300);
+                        sp_attr.value = "";
+                        span.setAttributeNode(sp_attr);
+                    },
+                    success: (response) =>{
+                        window.location.href='student/';
+                    }
+                });
+            }, 2000);
+
+            
+        }
+    </script>
+{% endblock %}

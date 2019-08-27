@@ -1,0 +1,288 @@
+{% include 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- CUSTOM -->
+<div class="student-sidebar">
+    <div class="stu-content">
+        <a href=""><img src="https://66.media.tumblr.com/f5ab134f5719b423e25da6603ea06807/tumblr_inline_po3thlxeZ01wyt1ck_540.jpg" alt="" width="150px" style="border-radius: 100px;margin-bottom:50px;"></a>
+        {% csrf_token %}
+        <div class="admin-info" style="text-align: center;">
+            <h2 id="username"></h2>
+            <p id="full_name"></p>
+            <p id="email"></p>
+        </div>
+        <hr>
+        <h2 style="text-align: center;">Dashboard</h2>
+        <hr>
+        <div class="stu-menu">
+            <ul>
+                <a href="/student/" >
+                    <li><i class="fa fa-home"></i> Home</li>
+                </a>
+                <a data-toggle="modal" data-target=".bd-example-modal-lg" style="cursor: pointer;">
+                    <li><i class="fa fa-info-circle"></i> About</li>
+                </a>
+                <a data-toggle="modal" data-target="#settings" style="cursor: pointer;">
+                    <li><i class="fa fa-gear"></i> Settings</li>
+                </a>
+                <a data-toggle="modal" data-target="#exampleModal" style="cursor: pointer;">
+                    <li><i class="fa fa-sign-out"></i> Logout</li>
+                </a>  
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">E-Clearance</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <h3>Do you want to sign out?</h3>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <a href="{% url 'logout' %}" type="button" class="btn btn-danger">Sign me out!</a>
+        </div>
+        </div>
+    </div>
+</div>
+<!-- MODAL ABOUT -->
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">About Us</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Alias ad a laboriosam iure nostrum incidunt doloremque aperiam sit esse ex eum tenetur dolor quo temporibus, excepturi, aut eaque? Sequi, dolorem!
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis sint officia a ducimus voluptatem. Magnam, officiis? Recusandae ullam eaque commodi, consectetur corrupti earum nulla esse nam, voluptas asperiores amet nihil!
+            </p>
+        </div>
+    </div>
+  </div>
+</div>
+<!-- Settings Modal -->
+<div class="modal fade" id="settings" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Settings</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <style>
+                #custom-modal-body input{
+                    display: block;
+                    margin: 20px 0;
+                    width: 100%;
+                }
+                #alert-bs{
+                    display: none;
+                }
+                #alert-bs-failed{
+                    display: none;
+                }
+            </style>
+            <div class="modal-body" id="custom-modal-body">
+                <div class="alert alert-success" role="alert" id="alert-bs">
+                    Successfully Updated!
+                </div>
+                <div class="alert alert-danger" role="alert" id="alert-bs-failed">
+                    
+                </div>
+                {% csrf_token %}
+                <input type="text" name="username" id="id_username" placeholder="Enter Username" value="{{ user.username }}" required="">
+                <input type="text" name="first_name" id="id_first_name" placeholder="Enter first name" value="{{ user.first_name }}" required="">
+                <input type="text" name="last_name" id="id_last_name" placeholder="Enter last name" value="{{ user.last_name }}" required="">
+                
+                <button class="btn btn-success" onclick="updateSettings({{ user.id }})">Update Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stu-dashboard">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h1>Overall</h1>
+                <div id="myDiv"></div>
+            </div>
+        </div>
+        <h1 style="margin-top:50px;">Clearance </h1>
+        <p>Not Cleared</p>
+        <div style="display: none;" class="alert alert-success" id="request_success">
+            Success! All Departments have been notified.
+        </div>
+        <button id="btn-request" type="button" class="btn btn-primary" onclick="requestSignature({{ user.id }})">
+            <span id="loadingrequest"></span>
+            Request Signature
+        </button><br>
+        <br/>
+        <div class="row">
+            <div class="col-sm">
+                <b>Librarian</b>
+            </div>
+            <div class="col-sm">
+                <b>Cashier</b>
+            </div>
+            <div class="col-sm">
+                <b>Dean</b>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <i class="fa fa-check" style="color:green;"></i>
+            </div>
+            <div class="col-sm">
+                <i class="fa fa-check" style="color:green;"></i>
+            </div>
+            <div class="col-sm">
+                <i class="fa fa-times" style="color:red;"></i>
+            </div>
+        </div>
+        <footer style="margin-top:200px;">
+            <p>Version 1</p>
+        </footer>
+    </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+    trace1 = {
+    type: 'scatter',
+    x: [1, 2, 3, 4],
+    y: [10, 15, 13, 17],
+    mode: 'lines',
+    name: 'Not Cleared',
+    line: {
+        color: 'rgb(219, 64, 82)',
+        width: 3
+    }
+    };
+
+    trace2 = {
+    type: 'scatter',
+    x: [1, 2, 3, 4],
+    y: [12, 9, 15, 12],
+    mode: 'lines',
+    name: 'Cleared',
+    line: {
+        color: 'rgb(55, 128, 191)',
+        width: 1
+    }
+    };
+
+    var layout = {
+    width: 1120,
+    height: 500
+    };
+
+    var data = [trace1, trace2];
+
+    Plotly.newPlot('myDiv', data, layout);
+
+    let csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
+    
+    function updateSettings(id){
+        let username = document.getElementById("id_username").value;
+        let first_name = document.getElementById("id_first_name").value;
+        let last_name = document.getElementById("id_last_name").value;
+
+        let json_info = {
+            username: username,
+            first_name: first_name,
+            last_name: last_name
+        }
+        $(document).ready(function(){
+            $.ajax({
+                url:"../api/accounts/user/",
+                method: "PUT",
+                data: json_info,
+                type: "application/json",
+                headers: { "X-CSRFToken": csrf_token },
+                success: (response) => {
+                    $("#alert-bs").show(300);
+                    setTimeout(function(){
+                        $("#alert-bs").hide(300);
+                    }, 3000);
+                },
+                error: (err_msg) => {
+                    document.getElementById("alert-bs-failed").innerHTML = err_msg.responseText;
+                    $("#alert-bs-failed").show(300);
+                    setTimeout(function(){
+                        $("#alert-bs-failed").hide(300);
+                    }, 3000);
+                }
+            })
+        });
+    }
+    
+    function requestSignature(user_id){
+        // LOADING BUTTON
+        let span = document.getElementById("loadingrequest");
+        let sp_attr = document.createAttribute("class");
+        sp_attr.value = "spinner-border spinner-border-sm";
+        span.setAttributeNode(sp_attr);
+
+        let json_info = {
+            id: user_id,
+            request: 1
+        }
+
+        setTimeout(function(){
+            $.ajax({
+                url: "../api/clearance/"+user_id+"/",
+                method: 'PUT',
+                type: 'application/json',
+                data: json_info,
+                headers: { "X-CSRFToken": csrf_token },
+                error: (err_msg) =>{
+                    
+                },
+                success: (response) =>{
+                    sp_attr.value = "";
+                    span.setAttributeNode(sp_attr);
+                    $("#request_success").show(300);
+                    document.getElementById("btn-request").disabled = true;
+                }
+            });
+        }, 2000);
+    }
+
+    setInterval(function(){
+        $(document).ready(function(){
+            $.ajax({
+                url:"../api/accounts/user/",
+                method: "GET",
+                type: "application/json",
+                headers: { "X-CSRFToken": csrf_token },
+                success: (response) => {
+                    showUsername(response.username, response.email, response.first_name, response.last_name);
+                },
+                error: (err_msg) => {
+                }
+            })
+        });
+    }, 100);
+
+    
+    function showUsername(username, email, first_name, last_name){
+        document.getElementById("username").innerHTML = username;
+        document.getElementById("email").innerHTML = email;
+        document.getElementById("full_name").innerHTML = last_name + ", " +first_name;
+    }
+</script>
+{% endblock %}
+
